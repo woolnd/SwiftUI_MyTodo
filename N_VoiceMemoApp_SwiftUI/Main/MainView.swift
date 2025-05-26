@@ -8,9 +8,41 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var currentTab = 0
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            .navigationBarBackButtonHidden()
+        TabView(selection: $currentTab){
+            Text("todo")
+                .tabItem {
+                    Image( currentTab == 0 ? "Todo_On" : "Todo_Off")
+                }
+                .tag(0)
+            
+            Text("memo")
+                .tabItem {
+                    Image( currentTab == 1 ? "Memo_On" : "Memo_Off")
+                }
+                .tag(1)
+            
+            Text("recording")
+                .tabItem {
+                    Image( currentTab == 2 ? "VoiceIcon_On" : "VoiceIcon_Off")
+                }
+                .tag(2)
+            
+            Text("timer")
+                .tabItem {
+                    Image( currentTab == 3 ? "Alarm_On" : "Alarm_Off")
+                }
+                .tag(3)
+            
+            Text("setting")
+                .tabItem {
+                    Image( currentTab == 4 ? "Setting_On" : "Setting_Off")
+                }
+                .tag(4)
+        }
+        .navigationBarBackButtonHidden()
     }
 }
 
