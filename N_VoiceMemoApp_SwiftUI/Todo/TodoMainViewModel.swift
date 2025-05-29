@@ -77,8 +77,10 @@ extension TodoMainViewModel {
                 }
                 return date1 < date2
             }
-            self.todoViewModels = sortedResponse.map{
-                todo(id: $0.id, title: $0.title, date: $0.date, time: $0.time, isCompleted: $0.isCompleted)
+            await MainActor.run {
+                self.todoViewModels = sortedResponse.map {
+                    todo(id: $0.id, title: $0.title, date: $0.date, time: $0.time, isCompleted: $0.isCompleted)
+                }
             }
         }
     }
