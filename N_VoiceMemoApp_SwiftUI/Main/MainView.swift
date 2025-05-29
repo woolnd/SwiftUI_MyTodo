@@ -12,7 +12,7 @@ struct MainView: View {
     
     var body: some View {
         TabView(selection: $currentTab){
-            Text("todo")
+            TodoMainView()
                 .tabItem {
                     Image( currentTab == 0 ? "Todo_On" : "Todo_Off")
                 }
