@@ -63,6 +63,8 @@ struct TodoMainView: View {
 
 struct TodoListView: View {
     @ObservedObject var viewModel: TodoMainViewModel
+    @State private var showingDeleteAlert = false
+    @State private var selectedTodoID: String?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -102,11 +104,27 @@ struct TodoListView: View {
                                 .foregroundColor(.iconOn)
                         }
                         .padding(.leading, Constants.ControlWidth * 19)
+                        .onLongPressGesture {
+                                    selectedTodoID = todo.id
+                                    showingDeleteAlert = true
+                                }
                         
                         Spacer()
                     }
                     .padding(.top, Constants.ControlHeight * 10)
                     .padding(.bottom, Constants.ControlHeight * 10)
+                    .alert(isPresented: $showingDeleteAlert) {
+                        Alert(
+                            title: Text("삭제하시겠습니까?"),
+                            message: Text("\(todo.title) 할 일을 삭제하면\n복구할 수 없습니다."),
+                            primaryButton: .destructive(Text("삭제")) {
+                                if let id = selectedTodoID {
+                                    viewModel.process(.deleteTodo(id))
+                                }
+                            },
+                            secondaryButton: .cancel(Text("취소"))
+                        )
+                    }
                     
                     Rectangle()
                         .fill(Color.gray1)

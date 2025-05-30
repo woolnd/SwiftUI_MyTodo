@@ -34,7 +34,7 @@ final class TodoMainViewModel: ObservableObject {
         case let .isCompleteToggle(id):
             print(id)
         case let .deleteTodo(id):
-            print(id)
+            deleteTodo(id)
         }
     }
     
@@ -81,6 +81,25 @@ extension TodoMainViewModel {
                 self.todoViewModels = sortedResponse.map {
                     todo(id: $0.id, title: $0.title, date: $0.date, time: $0.time, isCompleted: $0.isCompleted)
                 }
+            }
+        }
+    }
+    
+    private func deleteTodo(_ id: String) {
+        Task {
+            let db = Firestore.firestore()
+            let docRef = db.collection("Todo").document("List")
+            
+            do {
+                let snapshot = try await docRef.getDocument()
+                guard var response = try? snapshot.data(as: TodoResponse.self) else { return }
+                
+                response.todo.removeAll { $0.id == id }
+                
+                try docRef.setData(from: response)
+                process(.loadData) // 다시 불러와서 갱신
+            } catch {
+                print("삭제 실패: \(error)")
             }
         }
     }
