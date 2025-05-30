@@ -13,6 +13,7 @@ struct TodoCreateView: View {
     
     @State private var todoTitle: String = ""
     @State private var todoTime = Date()
+    @State private var showingAlert = false
     var formattedToday: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
@@ -25,6 +26,13 @@ struct TodoCreateView: View {
             TodoCreateMainView(todoTitle: $todoTitle, todoTime: $todoTime, formattedToday: formattedToday)
             
             Button {
+                
+                
+                guard !todoTitle.trimmingCharacters(in: .whitespaces).isEmpty else {
+                    showingAlert = true
+                    return
+                }
+                
                 let newTodo = todo(
                     id: UUID().uuidString,
                     title: todoTitle,
@@ -52,6 +60,13 @@ struct TodoCreateView: View {
             .padding(.bottom, Constants.ControlHeight * 50)
             
             
+        }
+        .alert(isPresented: $showingAlert) {
+            Alert(
+                title: Text("제목을 입력해주세요."),
+                message: Text("할 일을 추가하려면 제목이 필요합니다."),
+                dismissButton: .default(Text("확인"))
+            )
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
