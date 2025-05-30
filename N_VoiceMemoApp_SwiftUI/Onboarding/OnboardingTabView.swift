@@ -36,12 +36,6 @@ struct OnboardingTabView: View {
                 }
             }
         }
-        .navigationDestination(for: onboardingType.self) { view in
-            switch view {
-            case .main:
-                MainView()
-            }
-        }
     }
 }
 
@@ -138,7 +132,7 @@ struct OnboardingLastView: View {
                 Spacer()
                 
                 Button {
-                    AppState.shared.navigationPath.append(onboardingType.main)
+                    AppState.shared.push(.onboarding(.main))
                 } label: {
                     HStack(spacing: 0) {
                         Text("시작하기")
@@ -153,10 +147,6 @@ struct OnboardingLastView: View {
             }
         }
     }
-}
-
-enum onboardingType {
-    case main
 }
 
 #Preview {

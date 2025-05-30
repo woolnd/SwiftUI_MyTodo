@@ -14,4 +14,8 @@ class AppState: ObservableObject {
   
     // 네비게이션 스택 경로
     @Published var navigationPath = NavigationPath()
+    
+    func push(_ route: AppRoute) {
+        navigationPath.append(route)
+    }
 }

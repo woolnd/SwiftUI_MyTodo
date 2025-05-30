@@ -27,6 +27,21 @@ struct RootView: View {
                     }
                 }
             }
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .onboarding(let type):
+                    switch type {
+                    case .main:
+                        MainView()
+                    }
+                    
+                case .todo(let type):
+                    switch type {
+                    case .create:
+                        TodoCreateView()
+                    }
+                }
+            }
         }
     }
 }
