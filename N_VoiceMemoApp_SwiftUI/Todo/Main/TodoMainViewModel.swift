@@ -27,12 +27,11 @@ final class TodoMainViewModel: ObservableObject {
         case .loadData:
             loadData()
         case let .getDataSuccess(response):
-            print(response)
             transformResponse(response)
         case let .getDataFailure(error):
             print(error)
         case let .isCompleteToggle(id):
-            print(id)
+            toggleComplete(id)
         case let .deleteTodo(id):
             deleteTodo(id)
         }
@@ -80,6 +79,47 @@ extension TodoMainViewModel {
             await MainActor.run {
                 self.todoViewModels = sortedResponse.map {
                     todo(id: $0.id, title: $0.title, date: $0.date, time: $0.time, isCompleted: $0.isCompleted)
+                }
+            }
+        }
+    }
+    
+    private func toggleComplete(_ id: String) {
+        var todos = self.todoViewModels
+        
+        if let index = todos.firstIndex(where: { $0.id == id }) {
+            // 1. 현재 Todo 가져오기
+            var updatedTodo = todos[index]
+            // 2. isCompleted 토글
+            updatedTodo = todo(
+                id: updatedTodo.id,
+                title: updatedTodo.title,
+                date: updatedTodo.date,
+                time: updatedTodo.time,
+                isCompleted: !updatedTodo.isCompleted
+            )
+            // 3. 업데이트된 값 적용
+            todos[index] = updatedTodo
+            self.todoViewModels = todos
+            
+            // 4. Firestore에 업데이트
+            let db = Firestore.firestore()
+            let listRef = db.collection("Todo").document("List")
+            
+            // nested array 안의 하나만 수정하기 위해서 전체 todo array를 다시 올리는 구조라면:
+            Task {
+                do {
+                    // 전체 데이터 fetch
+                    let snapshot = try await listRef.getDocument()
+                    guard var response = try? snapshot.data(as: TodoResponse.self) else { return }
+                    
+                    if let idx = response.todo.firstIndex(where: { $0.id == id }) {
+                        response.todo[idx].isCompleted.toggle()
+                        
+                        try listRef.setData(from: response) // 전체 덮어쓰기
+                    }
+                } catch {
+                    print("Toggle update error: \(error)")
                 }
             }
         }

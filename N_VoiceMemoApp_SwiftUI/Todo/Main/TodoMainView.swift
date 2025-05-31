@@ -88,16 +88,22 @@ struct TodoListView: View {
                     }
                     
                     HStack(spacing: 0) {
-                        Image("Check_Off")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: Constants.ControlWidth * 25)
-                            .padding(.leading, Constants.ControlWidth * 50)
+                        Button {
+                            viewModel.process(.isCompleteToggle(todo.id))
+                        } label: {
+                            Image(todo.isCompleted == false ? "Check_Off" : "Check_On")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: Constants.ControlWidth * 25)
+                                .padding(.leading, Constants.ControlWidth * 50)
+                        }
+
                         
                         VStack(alignment: .leading, spacing: 5) {
                             Text(todo.title)
                                 .font(.system(size: 16))
-                                .foregroundColor(.bk)
+                                .foregroundColor(todo.isCompleted == false ? .bk : .iconOn)
+                                .strikethrough(todo.isCompleted, color: .iconOn)
                             
                             Text("\(todo.date) - \(todo.time)")
                                 .font(.system(size: 12))
