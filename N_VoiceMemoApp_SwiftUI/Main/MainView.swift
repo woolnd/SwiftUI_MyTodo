@@ -18,7 +18,7 @@ struct MainView: View {
                 }
                 .tag(0)
             
-            Text("memo")
+            MemoMainView()
                 .tabItem {
                     Image( currentTab == 1 ? "Memo_On" : "Memo_Off")
                 }

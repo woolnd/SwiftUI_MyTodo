@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 class AppState: ObservableObject {
     static let shared = AppState()
-  
+    
     // 네비게이션 스택 경로
     @Published var navigationPath = NavigationPath()
     

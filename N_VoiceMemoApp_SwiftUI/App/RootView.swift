@@ -40,6 +40,11 @@ struct RootView: View {
                     case .create:
                         TodoCreateView()
                     }
+                case .memo(let type):
+                    switch type {
+                    case .create:
+                        TodoCreateView()
+                    }
                 }
             }
         }

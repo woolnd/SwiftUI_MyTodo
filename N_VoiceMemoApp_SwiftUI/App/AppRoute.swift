@@ -10,6 +10,7 @@ import Foundation
 enum AppRoute: Hashable {
     case onboarding(onboardingType)
     case todo(todoMainType)
+    case memo(memoMainType)
 }
 
 enum onboardingType: Hashable {
@@ -17,5 +18,9 @@ enum onboardingType: Hashable {
 }
 
 enum todoMainType: Hashable {
+    case create
+}
+
+enum memoMainType: Hashable {
     case create
 }
