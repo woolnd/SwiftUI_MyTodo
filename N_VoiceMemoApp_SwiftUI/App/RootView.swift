@@ -43,7 +43,7 @@ struct RootView: View {
                 case .memo(let type):
                     switch type {
                     case .create:
-                        TodoCreateView()
+                        MemoCreateView()
                     }
                 }
             }
