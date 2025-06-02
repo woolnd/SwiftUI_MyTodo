@@ -1,20 +1,20 @@
 //
-//  TodoMainView.swift
+//  MemoMainView.swift
 //  N_VoiceMemoApp_SwiftUI
 //
-//  Created by wodnd on 5/29/25.
+//  Created by wodnd on 6/2/25.
 //
 
 import SwiftUI
 
-struct TodoMainView: View {
-    @StateObject var viewModel: TodoMainViewModel = TodoMainViewModel()
+struct MemoMainView: View {
+    @StateObject var viewModel: MemoMainViewModel = MemoMainViewModel()
     
     var body: some View {
         ZStack{
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    Text("To do list를\n추가해 보세요.")
+                    Text("메모를\n추가해 보세요.")
                         .multilineTextAlignment(.leading)
                         .font(.system(size: 26, weight: .bold))
                         .padding(.leading, Constants.ControlWidth * 30)
@@ -23,10 +23,10 @@ struct TodoMainView: View {
                     Spacer()
                 }
                 
-                if viewModel.todoViewModels.isEmpty {
-                    TodoListEmptyView()
+                if viewModel.memoViewModels.isEmpty {
+                    MemoListEmptyView()
                 } else {
-                    TodoListView(viewModel: viewModel)
+                    MemoListView(viewModel: viewModel)
                 }
                 
                 
@@ -42,7 +42,7 @@ struct TodoMainView: View {
                     Spacer()
                     
                     Button {
-                        AppState.shared.push(.todo(.create))
+                        AppState.shared.push(.memo(.create))
                     } label: {
                         Image("Write_btn")
                             .resizable()
@@ -61,15 +61,16 @@ struct TodoMainView: View {
     }
 }
 
-struct TodoListView: View {
-    @ObservedObject var viewModel: TodoMainViewModel
+struct MemoListView: View {
+    @ObservedObject var viewModel: MemoMainViewModel
     @State private var showingDeleteAlert = false
-    @State private var selectedTodoID: String?
+    @State private var selectedMemoID: String?
+    @State private var selectedMemo: memo?
     
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("할일 목록")
+                Text("메모 목록")
                     .font(.system(size: 16, weight: .bold))
                     .padding(.leading, Constants.ControlWidth * 30)
                     .padding(.top, Constants.ControlHeight * 23)
@@ -79,7 +80,7 @@ struct TodoListView: View {
             .padding(.bottom, Constants.ControlHeight * 5)
             
             
-            ForEach(Array(viewModel.todoViewModels.enumerated()), id: \.element.id) { index, todo in
+            ForEach(Array(viewModel.memoViewModels.enumerated()), id: \.element.id) { index, memo in
                 VStack(spacing: 0) {
                     if index == 0 {
                         Rectangle()
@@ -87,49 +88,45 @@ struct TodoListView: View {
                             .frame(height: 1)
                     }
                     
-                    HStack(spacing: 0) {
-                        Button {
-                            viewModel.process(.isCompleteToggle(todo.id))
-                        } label: {
-                            Image(todo.isCompleted == false ? "Check_Off" : "Check_On")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: Constants.ControlWidth * 25)
-                                .padding(.leading, Constants.ControlWidth * 50)
-                        }
-                        
-                        
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(todo.title)
-                                .font(.system(size: 16))
-                                .foregroundColor(todo.isCompleted == false ? .bk : .iconOn)
-                                .strikethrough(todo.isCompleted, color: .iconOn)
+                    Button(action: {
+                        selectedMemo = memo
+                    }, label: {
+                        HStack(spacing: 0) {
                             
-                            Text("\(todo.date) - \(todo.time)")
-                                .font(.system(size: 12))
-                                .foregroundColor(.iconOn)
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(memo.title)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.bk)
+                                
+                                Text("\(memo.date)")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.iconOn)
+                            }
+                            .padding(.leading, Constants.ControlWidth * 30)
+                            .onLongPressGesture {
+                                selectedMemoID = memo.id
+                                showingDeleteAlert = true
+                            }
+                            
+                            Spacer()
                         }
-                        .padding(.leading, Constants.ControlWidth * 19)
-                        .onLongPressGesture {
-                            selectedTodoID = todo.id
-                            showingDeleteAlert = true
-                        }
-                        
-                        Spacer()
-                    }
+                    })
                     .padding(.top, Constants.ControlHeight * 10)
                     .padding(.bottom, Constants.ControlHeight * 10)
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
                             title: Text("삭제하시겠습니까?"),
-                            message: Text("\(todo.title) 할 일을 삭제하면\n복구할 수 없습니다."),
+                            message: Text("\(memo.title) 메모를 삭제하면\n복구할 수 없습니다."),
                             primaryButton: .destructive(Text("삭제")) {
-                                if let id = selectedTodoID {
-                                    viewModel.process(.deleteTodo(id))
+                                if let id = selectedMemoID {
+                                    viewModel.process(.deleteMemo(id))
                                 }
                             },
                             secondaryButton: .cancel(Text("취소"))
                         )
+                    }
+                    .sheet(item: $selectedMemo) { memo in
+                        MemoDetailView(memo: memo)
                     }
                     
                     Rectangle()
@@ -144,7 +141,7 @@ struct TodoListView: View {
     }
 }
 
-struct TodoListEmptyView: View {
+struct MemoListEmptyView: View {
     var body: some View {
         VStack(spacing: 0) {
             
@@ -153,9 +150,9 @@ struct TodoListEmptyView: View {
             Image("Todo_Pencil")
             
             Text("""
-                 "매일 아침 8시 운동가라고 알려줘"
-                 "내일 8시 수강 신청하라고 알려줘"
-                 "1시 반 점심약속 리마인드 해줘"
+                 “퇴근 9시간 전 메모”
+                 “기획서 작성 후 퇴근하기 메모”
+                 “밀린 집안일 하기 메모"
                  """)
             .font(.system(size: 14))
             .foregroundColor(.gray2)
@@ -166,7 +163,6 @@ struct TodoListEmptyView: View {
     }
 }
 
-
 #Preview {
-    TodoMainView()
+    MemoMainView()
 }
