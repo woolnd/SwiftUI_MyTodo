@@ -24,7 +24,7 @@ struct MainView: View {
                 }
                 .tag(1)
             
-            Text("recording")
+            RecordingMainView()
                 .tabItem {
                     Image( currentTab == 2 ? "VoiceIcon_On" : "VoiceIcon_Off")
                 }
