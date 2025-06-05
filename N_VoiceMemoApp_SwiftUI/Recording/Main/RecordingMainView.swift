@@ -65,6 +65,7 @@ struct RecordingListView: View {
     @ObservedObject var viewModel: RecordingMainViewModel
     @State private var showingDeleteAlert = false
     @State private var selectedRecordingID: String?
+    @State private var selectedRecording: recording?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -87,30 +88,33 @@ struct RecordingListView: View {
                             .frame(height: 1)
                     }
                     
-                    HStack(spacing: 0) {
-                        
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(recording.title)
-                                .font(.system(size: 16))
-                                .foregroundColor(.bk)
+                    Button(action: {
+                        selectedRecording = recording
+                    }, label: {
+                        HStack(spacing: 0) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(recording.title)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.bk)
+                                
+                                Text("\(recording.date)")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.iconOn)
+                            }
+                            .padding(.leading, Constants.ControlWidth * 30)
+                                                    
+                            Spacer()
                             
-                            Text("\(recording.date)")
+                            Text("\(recording.time)")
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(.iconOn)
+                                .padding(.trailing, Constants.ControlWidth * 30)
                         }
-                        .padding(.leading, Constants.ControlWidth * 30)
-                                                
-                        Spacer()
-                        
-                        Text("\(recording.time)")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.iconOn)
-                            .padding(.trailing, Constants.ControlWidth * 30)
-                    }
-                    .onLongPressGesture {
-                        selectedRecordingID = recording.id
-                        showingDeleteAlert = true
-                    }
+                        .onLongPressGesture {
+                            selectedRecordingID = recording.id
+                            showingDeleteAlert = true
+                        }
+                    })
                     .padding(.top, Constants.ControlHeight * 10)
                     .padding(.bottom, Constants.ControlHeight * 10)
                     .alert(isPresented: $showingDeleteAlert) {
@@ -124,6 +128,9 @@ struct RecordingListView: View {
                             },
                             secondaryButton: .cancel(Text("취소"))
                         )
+                    }
+                    .sheet(item: $selectedRecording) { recording in
+                        RecordingDetailView(recording: recording)
                     }
                     
                     Rectangle()

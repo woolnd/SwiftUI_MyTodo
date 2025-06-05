@@ -11,7 +11,7 @@ struct RecordingResponse: Codable {
     var recording: [recording]
 }
 
-struct recording: Codable {
+struct recording: Codable, Identifiable {
     let id: String
     let title: String
     let time: String
