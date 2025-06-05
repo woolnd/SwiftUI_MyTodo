@@ -42,7 +42,7 @@ struct RecordingMainView: View {
                     Spacer()
                     
                     Button {
-                        AppState.shared.push(.todo(.create))
+                        AppState.shared.push(.recording(.create))
                     } label: {
                         Image("Write_btn")
                             .resizable()
