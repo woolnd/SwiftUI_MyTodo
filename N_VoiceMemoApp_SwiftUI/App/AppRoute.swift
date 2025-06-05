@@ -11,6 +11,7 @@ enum AppRoute: Hashable {
     case onboarding(onboardingType)
     case todo(todoMainType)
     case memo(memoMainType)
+    case recording(recordingMainType)
 }
 
 enum onboardingType: Hashable {
@@ -22,5 +23,9 @@ enum todoMainType: Hashable {
 }
 
 enum memoMainType: Hashable {
+    case create
+}
+
+enum recordingMainType: Hashable {
     case create
 }

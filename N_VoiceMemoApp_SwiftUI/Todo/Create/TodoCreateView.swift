@@ -26,8 +26,6 @@ struct TodoCreateView: View {
             TodoCreateMainView(todoTitle: $todoTitle, todoTime: $todoTime, formattedToday: formattedToday)
             
             Button {
-                
-                
                 guard !todoTitle.trimmingCharacters(in: .whitespaces).isEmpty else {
                     showingAlert = true
                     return

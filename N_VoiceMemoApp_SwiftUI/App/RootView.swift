@@ -45,6 +45,11 @@ struct RootView: View {
                     case .create:
                         MemoCreateView()
                     }
+                case .recording(let type):
+                    switch type {
+                        case .create:
+                            RecordingCreateView()
+                    }
                 }
             }
         }
