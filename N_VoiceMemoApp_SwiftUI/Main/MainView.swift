@@ -30,7 +30,7 @@ struct MainView: View {
                 }
                 .tag(2)
             
-            Text("timer")
+            TimerView()
                 .tabItem {
                     Image( currentTab == 3 ? "Alarm_On" : "Alarm_Off")
                 }
