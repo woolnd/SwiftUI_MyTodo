@@ -36,7 +36,7 @@ struct MainView: View {
                 }
                 .tag(3)
             
-            Text("setting")
+            HistoryView()
                 .tabItem {
                     Image( currentTab == 4 ? "Setting_On" : "Setting_Off")
                 }
