@@ -69,6 +69,7 @@ struct RecordingCreateView: View {
                 .padding(.bottom, Constants.ControlHeight * 50)
             }
         }
+        .ignoresSafeArea(.keyboard)
         .alert(isPresented: $showingAlert) {
             Alert(
                 title: Text("제목을 입력해주세요."),

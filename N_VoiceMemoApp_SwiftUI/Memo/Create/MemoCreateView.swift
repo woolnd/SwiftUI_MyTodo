@@ -24,73 +24,76 @@ struct MemoCreateView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            MemoCreateMainView(memoTitle: $memoTitle, memoContent: $memoContent, formattedToday: formattedToday)
-            
-            Button {
+        ScrollView{
+            VStack(spacing: 0) {
+                MemoCreateMainView(memoTitle: $memoTitle, memoContent: $memoContent, formattedToday: formattedToday)
+                    .padding(.bottom, Constants.ControlHeight * 20)
                 
-                guard !memoTitle.trimmingCharacters(in: .whitespaces).isEmpty else {
-                    showingTitleAlert = true
-                    return
+                Button {
+                    
+                    guard !memoTitle.trimmingCharacters(in: .whitespaces).isEmpty else {
+                        showingTitleAlert = true
+                        return
+                    }
+                    
+                    guard !memoContent.trimmingCharacters(in: .whitespaces).isEmpty else {
+                        showingContentAlert = true
+                        return
+                    }
+                    
+                    let newMemo = memo(
+                        id: UUID().uuidString,
+                        title: memoTitle,
+                        content: memoContent,
+                        date: formattedToday
+                    )
+                    
+                    viewModel.process(.createMemo(newMemo)) { success in
+                        if success {
+                            dismiss()
+                        }
+                    }
+                } label: {
+                    Text("생성하기")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.wh)
+                        .background(){
+                            RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(.key)
+                                .frame(width: Constants.ControlWidth * 330, height: Constants.ControlHeight * 50)
+                        }
+                    
                 }
                 
-                guard !memoContent.trimmingCharacters(in: .whitespaces).isEmpty else {
-                    showingContentAlert = true
-                    return
-                }
-                
-                let newMemo = memo(
-                    id: UUID().uuidString,
-                    title: memoTitle,
-                    content: memoContent,
-                    date: formattedToday
+            }
+            .alert(isPresented: $showingTitleAlert) {
+                Alert(
+                    title: Text("제목을 입력해주세요."),
+                    message: Text("메모를 추가하려면 제목이 필요합니다."),
+                    dismissButton: .default(Text("확인"))
                 )
-                
-                viewModel.process(.createMemo(newMemo)) { success in
-                    if success {
+            }
+            .alert(isPresented: $showingContentAlert) {
+                Alert(
+                    title: Text("내용을 입력해주세요."),
+                    message: Text("메모를 추가하려면 내용이 필요합니다."),
+                    dismissButton: .default(Text("확인"))
+                )
+            }
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
                         dismiss()
+                    }) {
+                        Image(systemName: "xmark") // 닫기 아이콘
+                            .foregroundColor(.primary)
                     }
-                }
-            } label: {
-                Text("생성하기")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(.wh)
-                    .background(){
-                        RoundedRectangle(cornerRadius: 10)
-                            .foregroundColor(.key)
-                            .frame(width: Constants.ControlWidth * 330, height: Constants.ControlHeight * 50)
-                    }
-                
-            }
-            .padding(.bottom, Constants.ControlHeight * 50)
-            
-            
-        }
-        .alert(isPresented: $showingTitleAlert) {
-            Alert(
-                title: Text("제목을 입력해주세요."),
-                message: Text("메모를 추가하려면 제목이 필요합니다."),
-                dismissButton: .default(Text("확인"))
-            )
-        }
-        .alert(isPresented: $showingContentAlert) {
-            Alert(
-                title: Text("내용을 입력해주세요."),
-                message: Text("메모를 추가하려면 내용이 필요합니다."),
-                dismissButton: .default(Text("확인"))
-            )
-        }
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    dismiss()
-                }) {
-                    Image(systemName: "xmark") // 닫기 아이콘
-                        .foregroundColor(.primary)
                 }
             }
         }
+        .scrollDismissesKeyboard(.interactively)
+        .scrollDisabled(false)
     }
 }
 
@@ -139,6 +142,14 @@ struct MemoCreateMainView: View {
                             }
                         }, alignment: .topLeading
                     )
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("완료") {
+                                hideKeyboard()
+                            }
+                        }
+                    }
                 
                 Spacer()
             }
@@ -162,6 +173,12 @@ struct MemoCreateMainView: View {
             
             Spacer()
         }
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

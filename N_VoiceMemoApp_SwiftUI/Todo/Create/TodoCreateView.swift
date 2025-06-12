@@ -59,6 +59,7 @@ struct TodoCreateView: View {
             
             
         }
+        .ignoresSafeArea(.keyboard)
         .alert(isPresented: $showingAlert) {
             Alert(
                 title: Text("제목을 입력해주세요."),
